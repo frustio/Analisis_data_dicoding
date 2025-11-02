@@ -18,7 +18,7 @@ st.title("💨 Dashboard Kualitas Udara: Analisis PM10")
 st.write("Stasiun: **Shunyi** (Data dari 2013-2017)")
 
 # --- Memuat Data ---
-df = load_data("main_data.csv")
+df = pd.read_csv("main_data.csv")
 
 # Hentikan eksekusi jika data gagal dimuat
 if df is None:
@@ -122,3 +122,4 @@ except Exception as e:
 with st.expander("Tampilkan Data Mentah (Sudah Diproses)"):
 
     st.dataframe(df.head(100))
+
