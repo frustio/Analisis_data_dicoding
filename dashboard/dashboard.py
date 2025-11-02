@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import altair as alt
 import numpy as np
+from pathlib import Path  # <-- 1. IMPORT LIBRARY PATHLIB
 
 # Konfigurasi halaman (opsional tapi disarankan)
 st.set_page_config(
@@ -10,15 +11,38 @@ st.set_page_config(
     layout="wide"
 )
 
-# --- Fungsi Pemuatan Data (dengan Caching) ---
-# st.cache_data memastikan data hanya dimuat sekali
+# --- 2. FUNGSI PEMUATAN DATA (DIPERBAIKI) ---
+@st.cache_data  # <-- Menggunakan cache agar data dimuat sekali saja
+def load_data(file_name):
+    """
+    Fungsi ini memuat data dan menggunakan pathlib untuk
+    memastikan path file benar saat di-deploy.
+    """
+    # Membuat path absolut ke file CSV
+    # Path(__file__) adalah path ke app.py
+    # .parent adalah folder tempat app.py berada
+    # / file_name adalah nama file datanya
+    try:
+        DATA_PATH = Path(__file__).parent / file_name
+        df = pd.read_csv(DATA_PATH)
+        
+        # Tambahkan kolom timestamp di sini setelah memuat
+        df['timestamp'] = pd.to_datetime(df[['year', 'month', 'day', 'hour']])
+        return df
+    except FileNotFoundError:
+        st.error(f"Error: File '{file_name}' tidak ditemukan.")
+        st.error(f"Pastikan '{file_name}' ada di folder yang sama dengan app.py di repositori GitHub Anda.")
+        return None
+    except Exception as e:
+        st.error(f"Terjadi error saat memuat data: {e}")
+        return None
 
 # --- Judul Utama Dashboard ---
 st.title("💨 Dashboard Kualitas Udara: Analisis PM10")
 st.write("Stasiun: **Shunyi** (Data dari 2013-2017)")
 
-# --- Memuat Data ---
-df = pd.read_csv("main_data.csv")
+# --- 3. MEMUAT DATA MENGGUNAKAN FUNGSI ---
+df = load_data("main_data.csv")
 
 # Hentikan eksekusi jika data gagal dimuat
 if df is None:
@@ -120,6 +144,5 @@ except Exception as e:
 # Tampilkan Data Mentah (Opsional)
 # ==============================================================================
 with st.expander("Tampilkan Data Mentah (Sudah Diproses)"):
-
+    # Tampilkan df.head() agar tidak terlalu berat
     st.dataframe(df.head(100))
-
