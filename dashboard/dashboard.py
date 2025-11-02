@@ -12,25 +12,6 @@ st.set_page_config(
 
 # --- Fungsi Pemuatan Data (dengan Caching) ---
 # st.cache_data memastikan data hanya dimuat sekali
-@st.cache_data
-def load_data(file_path):
-    """
-    Memuat dan mempersiapkan data dari file CSV.
-    """
-    try:
-        df = pd.read_csv(file_path)
-        
-        # Penting: Gabungkan kolom waktu menjadi satu kolom datetime
-        # Ini akan sangat membantu untuk plotting dan filtering
-        df['timestamp'] = pd.to_datetime(df[['year', 'month', 'day', 'hour']])
-        return df
-    except FileNotFoundError:
-        # Tampilkan error jika file tidak ditemukan
-        st.error(f"Error: File '{file_path}' tidak ditemukan. Pastikan file tersebut ada di folder yang sama dengan skrip app.py ini.")
-        return None
-    except Exception as e:
-        st.error(f"Terjadi error saat memuat data: {e}")
-        return None
 
 # --- Judul Utama Dashboard ---
 st.title("💨 Dashboard Kualitas Udara: Analisis PM10")
@@ -139,4 +120,5 @@ except Exception as e:
 # Tampilkan Data Mentah (Opsional)
 # ==============================================================================
 with st.expander("Tampilkan Data Mentah (Sudah Diproses)"):
+
     st.dataframe(df.head(100))
