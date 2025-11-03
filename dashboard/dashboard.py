@@ -140,9 +140,3 @@ try:
 except Exception as e:
     st.error(f"Error saat menganalisis data per bulan: {e}")
 
-# ==============================================================================
-# Tampilkan Data Mentah (Opsional)
-# ==============================================================================
-with st.expander("Tampilkan Data Mentah (Sudah Diproses)"):
-    # Tampilkan df.head() agar tidak terlalu berat
-    st.dataframe(df.head(100))
